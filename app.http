@@ -1,0 +1,22 @@
+@base_url = http://localhost:8089
+@api = {{base_url}}/api/v1
+@username = admin
+@passowrd = password
+@token = eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJhcHBzIiwic3ViIjoiYWRtaW4iLCJleHAiOjE3NDkyNjkwNjUsInVzZXJfaWQiOiIxIiwiaWF0IjoxNzQ5MjY5MDQ1LCJzY29wZSI6IiJ9.H_p96Hy7zH_bQ8K10vlZd6apQWEuIkgzIBXks5JYX5-B9pn8zPEzBpXSadpnzFl-8g7zfd_a9PEtjncLSV5opAX_QhHUXOiR18WeX8qxGFoXA5qpX5IuzL8dNvSIvhcQfaiqMwiFz7_4F2QGFGHZyPGJd_gZ0SUg_YA91dth0PkOobbH05gSknLEM9lGMqhiqCcFGsgVckiW8GdCbkGxqfgc6qixbpuaoRo92mm0h8Xajz3Q1wEXhsTgXkA_2Y4ejuhd-uFBaO4-mLccE9pnLPZ7OfmcP0tsHTX8A_8g9LC4G78HomaPCdphMIpG9oE70ZnOkCe2T6wOke8pY-udJg
+@refresh = eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJhcHBzIiwic3ViIjoiYW5kcmlhd2FuIiwiZXhwIjoxNzQ5MjY1MTgyLCJpYXQiOjE3NDkyNjUwNjIsInNjb3BlIjoiIn0.SVX9hYqVBs4b-7yPUZkBOXSRyGN7n7AW2A5XsMdJws40UBJvpBzztl2ir7L7C8A1FvjOQ59Mz5rAGgXH9xytPwXhRF8KHIXZF_aUO--cYhbjleFPjA1J_Y0QtI5ncEoLz6wMHDuz04_xjvbHaejSVo1dgbcZsq3iYc3UrL_Rgz-CQiwARk8CsOeevAGukxz_px-IMYPA2BIypWHcdbsqkgzcjTMAY0xBjGTEND97p1omvPPIDkT-pln8k3zyUEjY9qeEUT1AJwDB_HgoXePTSeW08oVZvrcWeOSdiEP3q9iuIVo93LjVOApcHJyGWzjEqYe_h1mrm2ciQ541BbzsTQ
+GET {{api}}/users
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+POST {{api}}/auth/login
+Accept: application/json
+Authorization: Basic {{username}}:{{passowrd}}
+
+###
+
+POST {{api}}/auth/token/refresh
+Accept: application/json
+Authorization: Bearer {{refresh}}
+

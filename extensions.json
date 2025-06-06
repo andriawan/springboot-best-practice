@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "humao.rest-client",
+        "vscjava.vscode-java-debug",
+        "vscjava.vscode-java-pack",
+        "mhutchie.git-graph",
+        "eamodio.gitlens",
+        "redhat.java",
+        "vscjava.vscode-maven",
+        "vscjava.vscode-java-test",
+        "vscjava.vscode-java-dependency",
+        "cweijan.vscode-mysql-client2"
+    ]
+}
