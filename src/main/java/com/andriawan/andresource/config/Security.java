@@ -8,6 +8,7 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +46,8 @@ public class Security {
 
   private String loginRoute = "/api/v1/auth/login";
 
+  @Autowired private CustomAuthenticationEntryPoint entryPoint;
+
   @Bean
   public InMemoryUserDetailsManager sampleUser() {
     UserDetails user =
@@ -58,6 +61,7 @@ public class Security {
     return http.httpBasic(Customizer.withDefaults())
         .securityMatcher(loginRoute)
         .csrf(crsf -> crsf.disable())
+        .exceptionHandling(exception -> exception.authenticationEntryPoint(entryPoint))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .build();
@@ -70,7 +74,8 @@ public class Security {
             request ->
                 request.requestMatchers(publicRoute).permitAll().anyRequest().authenticated())
         .csrf(crsf -> crsf.disable())
-        .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+        .oauth2ResourceServer(
+            oauth2 -> oauth2.jwt(Customizer.withDefaults()).authenticationEntryPoint(entryPoint))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .build();
