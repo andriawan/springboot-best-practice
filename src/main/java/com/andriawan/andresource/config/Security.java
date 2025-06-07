@@ -6,13 +6,12 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -42,22 +41,32 @@ public class Security {
   @Value("${auth.sample.password}")
   private String samplePassword;
 
-  private String[] publicRoute = {
-    "/api/v1/auth/login",
-    "/api/v1/auth/token/refresh"
-  };
+  private String[] publicRoute = {"/v3/api-docs/*", "/v3/api-docs", "/swagger-ui/*"};
+
+  private String loginRoute = "/api/v1/auth/login";
 
   @Bean
   public InMemoryUserDetailsManager sampleUser() {
-    UserDetails user = User.withUsername(sampeUsername)
-      .password("{noop}".concat(samplePassword)).build();
+    UserDetails user =
+        User.withUsername(sampeUsername).password("{noop}".concat(samplePassword)).build();
     return new InMemoryUserDetailsManager(user);
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  @Order(1)
+  public SecurityFilterChain loginFilterChain(HttpSecurity http) throws Exception {
     return http.httpBasic(Customizer.withDefaults())
-        .authorizeHttpRequests(
+        .securityMatcher(loginRoute)
+        .csrf(crsf -> crsf.disable())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .build();
+  }
+
+  @Bean
+  @Order(2)
+  public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+    return http.authorizeHttpRequests(
             request ->
                 request.requestMatchers(publicRoute).permitAll().anyRequest().authenticated())
         .csrf(crsf -> crsf.disable())
