@@ -1,5 +1,6 @@
 package com.andriawan.andresource.config;
 
+import com.andriawan.andresource.service.JpaUserDetailsService;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -17,15 +18,12 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -50,12 +48,7 @@ public class Security {
 
   @Autowired private CustomAuthenticationEntryPoint entryPoint;
 
-  @Bean
-  public InMemoryUserDetailsManager sampleUser() {
-    UserDetails user =
-        User.withUsername(sampeUsername).password("{noop}".concat(samplePassword)).build();
-    return new InMemoryUserDetailsManager(user);
-  }
+  @Autowired private JpaUserDetailsService jpaUserDetailsService;
 
   @Bean
   @Order(1)
@@ -64,6 +57,7 @@ public class Security {
         .securityMatcher(loginRoute)
         .csrf(crsf -> crsf.disable())
         .exceptionHandling(exception -> exception.authenticationEntryPoint(entryPoint))
+        .userDetailsService(jpaUserDetailsService)
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .build();
@@ -76,6 +70,7 @@ public class Security {
             request ->
                 request.requestMatchers(publicRoute).permitAll().anyRequest().authenticated())
         .csrf(crsf -> crsf.disable())
+        .userDetailsService(jpaUserDetailsService)
         .oauth2ResourceServer(
             oauth2 -> oauth2.jwt(Customizer.withDefaults()).authenticationEntryPoint(entryPoint))
         .sessionManagement(
