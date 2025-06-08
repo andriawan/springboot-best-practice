@@ -42,7 +42,9 @@ public class Security {
   @Value("${auth.sample.password}")
   private String samplePassword;
 
-  private String[] publicRoute = {"/v3/api-docs/*", "/v3/api-docs", "/swagger-ui/*"};
+  private String[] publicRoute = {
+    "/v3/api-docs/*", "/v3/api-docs", "/swagger-ui/*", "/api/v1/auth/token/refresh"
+  };
 
   private String loginRoute = "/api/v1/auth/login";
 

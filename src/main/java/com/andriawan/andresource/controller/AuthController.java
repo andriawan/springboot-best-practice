@@ -5,11 +5,13 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AuthController {
   @Autowired private TokenService tokenService;
+
+  public record RefreshTokenRequest(String token) {}
 
   @SecurityRequirement(name = "basicAuth")
   @PostMapping("/login")
@@ -31,8 +35,16 @@ public class AuthController {
   }
 
   @SecurityRequirement(name = "jwt")
+  @PostMapping("/logout")
+  public ResponseEntity<Map<String, String>> logout(
+      Authentication authentication, @RequestBody RefreshTokenRequest request) {
+    tokenService.revokeToken(request);
+    return ResponseEntity.ok(Map.of("message", "token deleted"));
+  }
+
   @PostMapping("/token/refresh")
-  public ResponseEntity<Map<String, String>> refreshToken(Authentication authentication) {
-    return ResponseEntity.ok(tokenService.generateToken(authentication));
+  public ResponseEntity<Map<String, String>> refreshToken(@RequestBody RefreshTokenRequest request)
+      throws AuthenticationException {
+    return ResponseEntity.ok(tokenService.doRefreshToken(request));
   }
 }

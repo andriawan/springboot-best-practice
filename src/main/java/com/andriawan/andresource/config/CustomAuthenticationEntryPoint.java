@@ -39,7 +39,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             responseForJson.status(),
             "message",
             responseForJson.message(),
-            "exception", 
+            "exception",
             responseForJson.exceptionClassName(),
             "path",
             request.getRequestURI());
