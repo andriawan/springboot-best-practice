@@ -7,6 +7,7 @@ import java.security.Principal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,5 +22,12 @@ public class UserController {
   public ResponseEntity<List<User>> getAllUser(Principal principal) {
     List<User> users = userRepository.findAll();
     return ResponseEntity.ok(users);
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<User> getAuthenticatedUser(Principal principal) {
+    User user = userRepository.findByEmail(principal.getName())
+      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    return ResponseEntity.ok(user);
   }
 }
