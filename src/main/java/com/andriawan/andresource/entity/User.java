@@ -9,6 +9,9 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.ZonedDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +34,7 @@ public class User {
   @Column(nullable = false, length = 255)
   private String email;
 
+  @JsonIgnore
   @Column(nullable = false, length = 255)
   private String password;
 
