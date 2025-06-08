@@ -29,7 +29,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
       AuthenticationException authException)
       throws IOException {
 
-    String test = request.getHeader("Authorization");
     Response responseForJson = authExceptionResponseService.getMappedResponse(authException);
 
     Map<String, Object> errorResponse =
@@ -40,7 +39,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             responseForJson.status(),
             "message",
             responseForJson.message(),
-            "exception",
+            "exception", 
             responseForJson.exceptionClassName(),
             "path",
             request.getRequestURI());

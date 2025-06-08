@@ -26,8 +26,10 @@ public class UserController {
 
   @GetMapping("/me")
   public ResponseEntity<User> getAuthenticatedUser(Principal principal) {
-    User user = userRepository.findByEmail(principal.getName())
-      .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    User user =
+        userRepository
+            .findByEmail(principal.getName())
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     return ResponseEntity.ok(user);
   }
 }
