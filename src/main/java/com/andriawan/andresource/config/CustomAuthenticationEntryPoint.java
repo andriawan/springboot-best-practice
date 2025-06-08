@@ -1,5 +1,7 @@
 package com.andriawan.andresource.config;
 
+import com.andriawan.andresource.service.AuthExceptionResponseService;
+import com.andriawan.andresource.service.AuthExceptionResponseService.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -7,7 +9,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
+  @Autowired private AuthExceptionResponseService authExceptionResponseService;
+
   @Override
   public void commence(
       HttpServletRequest request,
@@ -25,36 +29,24 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
       AuthenticationException authException)
       throws IOException {
 
-    String message = authException.getMessage();
-    int status = HttpServletResponse.SC_UNAUTHORIZED;
-
-    Throwable cause = authException.getCause();
-    if (cause instanceof com.nimbusds.jwt.proc.BadJWTException
-        || cause instanceof org.springframework.security.oauth2.jwt.JwtException) {
-      if (cause.getMessage().toLowerCase().contains("expired")) {
-        message = "Token expired";
-      } else {
-        message = "Invalid token";
-      }
-    }
-
-    if (authException instanceof BadCredentialsException) {
-      status = HttpServletResponse.SC_BAD_REQUEST;
-    }
+    String test = request.getHeader("Authorization");
+    Response responseForJson = authExceptionResponseService.getMappedResponse(authException);
 
     Map<String, Object> errorResponse =
         Map.of(
             "timestamp",
             Instant.now().toString(),
             "status",
-            status,
+            responseForJson.status(),
             "message",
-            message,
+            responseForJson.message(),
+            "exception",
+            responseForJson.exceptionClassName(),
             "path",
             request.getRequestURI());
 
     response.setContentType("application/json");
-    response.setStatus(status);
+    response.setStatus(responseForJson.status());
     objectMapper.writeValue(response.getOutputStream(), errorResponse);
   }
 }
