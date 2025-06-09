@@ -36,12 +36,6 @@ public class Security {
   @Value("${rsa.key.public}")
   private RSAPublicKey rsaPublicKey;
 
-  @Value("${auth.sample.user}")
-  private String sampeUsername;
-
-  @Value("${auth.sample.password}")
-  private String samplePassword;
-
   private String[] publicRoute = {
     "/v3/api-docs/*", "/v3/api-docs", "/swagger-ui/*", "/api/v1/auth/token/refresh"
   };
