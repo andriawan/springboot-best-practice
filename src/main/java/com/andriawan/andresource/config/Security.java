@@ -40,7 +40,7 @@ public class Security {
     "/v3/api-docs/*", "/v3/api-docs", "/swagger-ui/*", "/api/v1/auth/token/refresh"
   };
 
-  private String loginRoute = "/api/v1/auth/login";
+  public static String loginRoute = "/api/v1/auth/login";
 
   @Autowired private CustomAuthenticationEntryPoint entryPoint;
 
