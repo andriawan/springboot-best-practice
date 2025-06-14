@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.websocket.AuthenticationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -19,9 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 @Slf4j
 public class AuthController {
-  @Autowired private TokenService tokenService;
+
+  private final TokenService tokenService;
 
   public record RefreshTokenRequest(String token) {}
+
+  public AuthController(TokenService tokeService) {
+    this.tokenService = tokeService;
+  }
 
   @SecurityRequirement(name = "basicAuth")
   @PostMapping("/login")

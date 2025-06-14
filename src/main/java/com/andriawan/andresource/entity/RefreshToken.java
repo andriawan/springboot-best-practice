@@ -2,7 +2,6 @@ package com.andriawan.andresource.entity;
 
 import jakarta.persistence.*;
 import java.time.Instant;
-import java.util.UUID;
 import lombok.*;
 
 @Entity

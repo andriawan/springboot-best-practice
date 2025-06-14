@@ -9,7 +9,6 @@ import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -33,17 +32,21 @@ public class TokenService {
   long expiredRefreshSeconds;
 
   private final JwtEncoder jwtEncoder;
-
   private final JwtDecoder jwtDecoder;
-
-  @Autowired JpaUserDetailsService jpaUserDetailsService;
-  @Autowired RefreshTokenRepository refreshTokenRepository;
+  private final JpaUserDetailsService jpaUserDetailsService;
+  private final RefreshTokenRepository refreshTokenRepository;
 
   public record JwtClaimsSetParams(long time, Instant now, String scope, String username) {}
 
-  public TokenService(JwtEncoder jwtEncoder, JwtDecoder jwtDecoder) {
+  public TokenService(
+      JwtEncoder jwtEncoder,
+      JwtDecoder jwtDecoder,
+      RefreshTokenRepository refreshTokenRepository,
+      JpaUserDetailsService jpaUserDetailsService) {
     this.jwtEncoder = jwtEncoder;
     this.jwtDecoder = jwtDecoder;
+    this.jpaUserDetailsService = jpaUserDetailsService;
+    this.refreshTokenRepository = refreshTokenRepository;
   }
 
   public Map<String, String> generateToken(Authentication authentication) {
