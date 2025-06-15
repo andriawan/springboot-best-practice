@@ -9,6 +9,10 @@
         "vscjava.vscode-maven",
         "vscjava.vscode-java-test",
         "vscjava.vscode-java-dependency",
-        "cweijan.vscode-mysql-client2"
+        "cweijan.vscode-mysql-client2",
+        "kenhowardpdx.vscode-gist",
+        "letrieu.expand-region",
+        "alefragnani.bookmarks",
+        "furiousturtle.terminal-commander"
     ]
 }

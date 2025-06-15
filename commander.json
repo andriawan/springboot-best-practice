@@ -1,0 +1,16 @@
+{
+    "commands": {
+        "spotless": {
+            "description": "format java code",
+            "command": "mvn spotless:apply"
+        },
+        "maven test": {
+            "description": "run maven test",
+            "command": "mvn test"
+        },
+        "springboot run": {
+            "description": "run springboot",
+            "command": "mvn spring-boot:run"
+        }
+    }
+}
