@@ -26,10 +26,19 @@ Uses `io.github.git-commit-id` dependency to generate `git.properties` at build 
 ✅ **Database migration with Flyway**  
 Includes Flyway dependency with base configuration, initial SQL migration scripts, and Docker Compose setup for seamless database version control and automated schema updates.
 
+✅ **Out-of-the-box CORS setup via application properties**     
+CORS configuration can be easily managed through application.properties. Just enable or disable the config
 
-### 🛠️ In Progress
+```
+cors.enabled=${CORS_ENABLED:false}
+cors.origin.allowed=${CORS_ORIGIN_ALLOWED:*}
+cors.header.allowed=${CORS_HEADER_ALLOWED:*}
+cors.method.allowed=${CORS_METHOD_ALLOWED:*}
 
-- [ ] 🔬 Writing test cases to cover all logic branches and edge scenarios
+```
+
+✅ **Integration testing with Testcontainers**  
+Supports full integration tests using Testcontainers, including auto-configuration with `@ServiceConnection`. This allows isolated, reproducible testing against real services like PostgreSQL or Redis in disposable Docker containers.
 
 Perfect as a starter template for any Java backend project!
 Check it out and feel free to ⭐ or fork!
