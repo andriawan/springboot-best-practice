@@ -11,6 +11,14 @@
         "springboot run": {
             "description": "run springboot",
             "command": "mvn spring-boot:run"
+        },
+        "bump version": {
+            "description": "bump version",
+            "command": "npx @dwmkerr/standard-version --packageFiles pom.xml --bumpFiles pom.xml"
+        },
+        "bump first release version": {
+            "description": "bump first release version",
+            "command": "npx @dwmkerr/standard-version --first-release --packageFiles pom.xml --bumpFiles pom.xml"
         }
     }
 }
