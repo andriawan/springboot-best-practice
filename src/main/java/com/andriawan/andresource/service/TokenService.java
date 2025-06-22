@@ -69,8 +69,10 @@ public class TokenService {
     return Map.of("access_token", accessToken, "refresh_token", refreshToken);
   }
 
+  @Transactional
   public String setupRefreshToken(JwtClaimsSet claimsSetRefreshToken) {
     String token = encodeToken(claimsSetRefreshToken);
+    refreshTokenRepository.deleteByToken(token);
     refreshTokenRepository.save(
         RefreshToken.builder()
             .token(token)
