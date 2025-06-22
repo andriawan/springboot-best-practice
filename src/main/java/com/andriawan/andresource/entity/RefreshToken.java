@@ -5,7 +5,7 @@ import java.time.Instant;
 import lombok.*;
 
 @Entity
-@Table(name = "refresh_token", schema = "auth")
+@Table(name = "refresh_token", schema = "auth_internal")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
