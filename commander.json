@@ -19,6 +19,12 @@
         "bump first release version": {
             "description": "bump first release version",
             "command": "npx @dwmkerr/standard-version --first-release --packageFiles pom.xml --bumpFiles pom.xml"
+        },
+        "docker build": {
+            "command": "docker build -f docker/app/Dockerfile ."
+        },
+        "docker compose": {
+            "command": "docker compose -f docker/app/compose.yml up"
         }
     }
 }
