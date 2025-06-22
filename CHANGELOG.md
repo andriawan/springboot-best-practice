@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.1](https://github.com/andriawan/springboot-best-practice/compare/v1.0.0...v1.0.1) (2025-06-22)
+
+
+### Bug Fixes
+
+* delete existing token before issuing refresh token ([046a3d1](https://github.com/andriawan/springboot-best-practice/commit/046a3d1792645c6d4438194df804a8a8b734f1b3))
+* make Bad Credential exception return status code 400 ([8796c00](https://github.com/andriawan/springboot-best-practice/commit/8796c00bd8d289a70c9b7dd6032d3ff9b6d8f412))
+
 ## 1.0.0 (2025-06-17)
 
 
