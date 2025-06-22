@@ -1,0 +1,12 @@
+services:
+  app:
+    build:
+      context: ../../
+      dockerfile: docker/app/Dockerfile
+    container_name: ${SPRING_APPLICATION_NAME:-demo}
+    ports:
+      - '${APP_PORT:-8080}:8080'
+    volumes:
+      - .:/app
+    env_file:
+      - .env
