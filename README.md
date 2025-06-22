@@ -2,6 +2,40 @@
 
 This is a minimal Spring Boot application built with standard best practices. It includes JWT bearer token authentication via Spring Security, supports auto-reloading .env configuration, and provides clean, self-documented APIs using Swagger/OpenAPI. Designed as a lightweight foundation for scalable, secure RESTful services.
 
+## Prerequisites
+
+This project uses JWTs signed with **asymmetric encryption** (e.g., RSA).  
+You need to generate a **public/private key pair** and place them in the default dir
+
+```bash
+src/main/resources/certs/
+```
+
+or you can custom the dir through application.properties
+
+```bash
+# JWT
+rsa.key.private=${RSA_KEY_PRIVATE:classpath:certs/private_key.pem}
+rsa.key.public=${RSA_KEY_PUBLIC:classpath:certs/public_key.pem}
+```
+
+### Required Files
+
+- 🔐 `private_key.pem` — used to **sign** the JWT
+- 🔓 `public_key.pem` — used to **verify** the JWT
+
+### 🔧 Generate Keys with OpenSSL
+
+If you don't already have the keys, you can generate them using the following commands:
+
+```bash
+# Generate private key (2048-bit RSA)
+openssl genrsa -out private.key 2048
+
+# Extract the corresponding public key
+openssl rsa -in private.key -pubout -out public.key
+```
+
 ## Features
 
 ### ✅ JWT Authentication using Spring Security And Oauth2 Resource Server
