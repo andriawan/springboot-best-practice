@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/andriawan/springboot-best-practice/compare/v1.0.1...v1.1.0) (2025-06-22)
+
+
+### Features
+
+* docker configuration for app production deployment ([1585248](https://github.com/andriawan/springboot-best-practice/commit/1585248a8c83a408c0f13d2c2af82fe832bfd79e))
+
 ### [1.0.1](https://github.com/andriawan/springboot-best-practice/compare/v1.0.0...v1.0.1) (2025-06-22)
 
 
