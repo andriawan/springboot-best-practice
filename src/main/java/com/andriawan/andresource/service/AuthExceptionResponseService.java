@@ -3,6 +3,7 @@ package com.andriawan.andresource.service;
 import com.nimbusds.jwt.proc.BadJWTException;
 import java.util.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.jwt.JwtException;
@@ -27,6 +28,13 @@ public class AuthExceptionResponseService {
             new Response(
                 exception.getMessage(),
                 HttpStatus.UNAUTHORIZED.value(),
+                exception.getClass().getName()));
+    resolverMap.put(
+        BadCredentialsException.class.getName(),
+        exception ->
+            new Response(
+                exception.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
                 exception.getClass().getName()));
     resolverMap.put(
         InsufficientAuthenticationException.class.getName(),
