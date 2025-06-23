@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/andriawan/springboot-best-practice/compare/v1.1.0...v1.2.0) (2025-06-23)
+
+
+### Features
+
+* implement base rate limit with jcache (ehcache) and bucket4j ([5017e5c](https://github.com/andriawan/springboot-best-practice/commit/5017e5cf4531188229fca04f7a49d36dc8f45971))
+
 ## [1.1.0](https://github.com/andriawan/springboot-best-practice/compare/v1.0.1...v1.1.0) (2025-06-22)
 
 
