@@ -25,6 +25,12 @@
         },
         "docker compose": {
             "command": "docker compose -f docker/app/compose.yml up"
+        },
+        "docker compose build": {
+            "command": "docker compose -f docker/app/compose.yml build"
+        },
+        "docker compose full build": {
+            "command": "docker compose -f docker/app/compose.yml build --no-cache"
         }
     }
 }

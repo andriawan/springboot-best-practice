@@ -70,6 +70,28 @@ Uses `io.github.git-commit-id` dependency to generate `git.properties` at build 
 
 Includes Flyway dependency with base configuration, initial SQL migration scripts, and Docker Compose setup for seamless database version control and automated schema updates.
 
+### ✅ Rate Limiting using JCache and Bucket4j — configurable via properties
+
+Implements API rate limiting using [Bucket4j](https://github.com/MarcGiffing/bucket4j-spring-boot-starter) backed by JCache (e.g., Ehcache). Configuration is externalized via `application.properties` for easy control of rate policies, such as capacity, refill rate, and limit per IP or route—ensuring fair use and protection against abuse.
+
+```
+# first make sure you config cache. bucket4j need cache for storing limiter state
+spring.cache.type=${SPRING_CACHE_TYPE:jcache}
+spring.cache.jcache.config=${SPRING_CACHE_JCACHE_CONFIG:classpath:ehcache.xml}
+
+# RATE LIMIT. these are minimal setup. you can customize based on your usecase
+bucket4j.enabled=${BUCKET4J_ENABLED:false}
+bucket4j.filters[0].cache-name=${BUCKET4J_CACHE_NAME:buckets}
+bucket4j.filters[0].url=${BUCKET4J_URL:.*}
+bucket4j.filters[0].rate-limits[0].bandwidths[0].capacity=${BUCKET4J_CAPACITY:10}
+bucket4j.filters[0].rate-limits[0].bandwidths[0].time=${BUCKET4J_TIME_PERIOD:1}
+bucket4j.filters[0].rate-limits[0].bandwidths[0].unit=${BUCKET4J_TIME_UNIT:minutes}
+bucket4j.filters[0].http-response-headers.include-remaining=${BUCKET4J_HTTP_RESPONSE_HEADERS_INCLUDE_REMAINING:true}
+bucket4j.filters[0].http-response-headers.include-limit=${BUCKET4J_HTTP_RESPONSE_HEADERS_INCLUDE_LIMIT:true}
+bucket4j.filters[0].http-response-headers.include-reset=${BUCKET4J_HTTP_RESPONSE_HEADERS_INCLUDE_RESET:true}
+
+```
+
 ### ✅ Out-of-the-box CORS setup via application properties     
 
 CORS configuration can be easily managed through application.properties. Just enable or disable the config
