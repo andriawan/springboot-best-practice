@@ -4,6 +4,7 @@ import com.andriawan.andresource.service.TokenService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.Map;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
 @Slf4j
 public class AuthController {
 
   private final TokenService tokenService;
 
   public record RefreshTokenRequest(String token) {}
-
-  public AuthController(TokenService tokeService) {
-    this.tokenService = tokeService;
-  }
 
   @SecurityRequirement(name = "basicAuth")
   @PostMapping("/login")

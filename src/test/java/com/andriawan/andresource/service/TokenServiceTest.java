@@ -1,6 +1,7 @@
 package com.andriawan.andresource.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.andriawan.andresource.entity.AuthenticatedUser;
@@ -11,6 +12,9 @@ import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -20,23 +24,15 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class TokenServiceTest {
 
-  private TokenService tokenService;
-  private JwtEncoder jwtEncoder;
-  private JwtDecoder jwtDecoder;
-  private RefreshTokenRepository refreshTokenRepository;
-  private JpaUserDetailsService jpaUserDetailsService;
+  @Mock private JwtEncoder jwtEncoder;
+  @Mock private JwtDecoder jwtDecoder;
+  @Mock private RefreshTokenRepository refreshTokenRepository;
+  @Mock private JpaUserDetailsService jpaUserDetailsService;
+  @InjectMocks private TokenService tokenService;
 
   @BeforeEach
   void setup() {
-    jwtEncoder = mock(JwtEncoder.class);
-    jwtDecoder = mock(JwtDecoder.class);
-    refreshTokenRepository = mock(RefreshTokenRepository.class);
-    jpaUserDetailsService = mock(JpaUserDetailsService.class);
-
-    tokenService =
-        new TokenService(jwtEncoder, jwtDecoder, refreshTokenRepository, jpaUserDetailsService);
-
-    // Inject @Value fields manually
+    MockitoAnnotations.openMocks(this);
     ReflectionTestUtils.setField(tokenService, "expiredTokenSeconds", 3600L);
     ReflectionTestUtils.setField(tokenService, "expiredRefreshSeconds", 7200L);
   }

@@ -5,6 +5,7 @@ import com.andriawan.andresource.repository.UserRepository;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.security.Principal;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,13 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @SecurityRequirement(name = "jwt")
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class UserController {
 
   private final UserRepository userRepository;
-
-  public UserController(UserRepository userRepository) {
-    this.userRepository = userRepository;
-  }
 
   @GetMapping("/users")
   public ResponseEntity<List<User>> getAllUser(Principal principal) {
