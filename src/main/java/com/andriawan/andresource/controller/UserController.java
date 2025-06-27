@@ -1,8 +1,9 @@
 package com.andriawan.andresource.controller;
 
-import com.andriawan.andresource.entity.User;
-import com.andriawan.andresource.repository.UserRepository;
+import com.andriawan.andresource.dto.UserResponse;
+import com.andriawan.andresource.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.persistence.EntityNotFoundException;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,20 +19,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
-  private final UserRepository userRepository;
+  private final UserService userService;
 
   @GetMapping("/users")
-  public ResponseEntity<List<User>> getAllUser(Principal principal) {
-    List<User> users = userRepository.findAll();
+  public ResponseEntity<List<UserResponse>> getAllUser(Principal principal) {
+    List<UserResponse> users = userService.getAllUsers();
     return ResponseEntity.ok(users);
   }
 
   @GetMapping("/me")
-  public ResponseEntity<User> getAuthenticatedUser(Principal principal) {
-    User user =
-        userRepository
-            .findByEmail(principal.getName())
-            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    return ResponseEntity.ok(user);
+  public ResponseEntity<UserResponse> getAuthenticatedUser(Principal principal) {
+    try {
+      UserResponse user = userService.getUserByEmail(principal.getName());
+      return ResponseEntity.ok(user);
+
+    } catch (EntityNotFoundException e) {
+      throw new UsernameNotFoundException("User not found");
+    }
   }
 }
