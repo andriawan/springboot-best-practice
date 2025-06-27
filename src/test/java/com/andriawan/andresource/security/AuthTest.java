@@ -1,6 +1,7 @@
 package com.andriawan.andresource.security;
 
 import com.andriawan.andresource.config.Security;
+import com.andriawan.andresource.controller.AuthController.RefreshTokenRequest;
 import com.andriawan.andresource.entity.User;
 import com.andriawan.andresource.repository.UserRepository;
 import java.util.Map;
@@ -28,6 +29,8 @@ public class AuthTest {
   @Autowired UserRepository userRepository;
 
   final String DEFAULT_PASSWORD = "password";
+  final String LOGOUT_ROUTE = "/api/v1/auth/logout";
+  final String REFRESH_ROUTE = "/api/v1/auth/token/refresh";
 
   @BeforeAll
   static void beforeAll() {
@@ -53,9 +56,37 @@ public class AuthTest {
     return response;
   }
 
+  private ResponseSpec doLoginWithId(String password, Long id) throws Exception {
+    String loginEndpoint = Security.loginRoute;
+    User user = userRepository.findById(id).orElseThrow();
+    var response =
+        webTestClient
+            .post()
+            .uri(loginEndpoint)
+            .headers(headers -> headers.setBasicAuth(user.getEmail(), password))
+            .exchange();
+    return response;
+  }
+
+  private ResponseSpec doRefreshToken(String token) throws Exception {
+    var response =
+        webTestClient
+            .post()
+            .uri(REFRESH_ROUTE)
+            .bodyValue(new RefreshTokenRequest(token))
+            .exchange();
+    return response;
+  }
+
   private Map<String, String> doLoginWithReturn(String password) throws Exception {
     ParameterizedTypeReference<Map<String, String>> typeRef = new ParameterizedTypeReference<>() {};
     var result = doLogin(password).returnResult(typeRef).getResponseBody().blockFirst();
+    return result;
+  }
+
+  private Map<String, String> doLoginWithReturn(String password, Long id) throws Exception {
+    ParameterizedTypeReference<Map<String, String>> typeRef = new ParameterizedTypeReference<>() {};
+    var result = doLoginWithId(password, id).returnResult(typeRef).getResponseBody().blockFirst();
     return result;
   }
 
@@ -71,7 +102,7 @@ public class AuthTest {
 
   @Test
   void user_can_get_own_profile() throws Exception {
-    Map<String, String> loginResponse = doLoginWithReturn(DEFAULT_PASSWORD);
+    Map<String, String> loginResponse = doLoginWithReturn(DEFAULT_PASSWORD, 3L);
     String token = loginResponse.get("access_token");
     webTestClient
         .get()
@@ -80,5 +111,27 @@ public class AuthTest {
         .exchange()
         .expectStatus()
         .isOk();
+  }
+
+  @Test
+  void user_can_get_logout_sucessfully() throws Exception {
+    Map<String, String> loginResponse = doLoginWithReturn(DEFAULT_PASSWORD, 2L);
+    String token = loginResponse.get("access_token");
+    webTestClient
+        .post()
+        .uri(LOGOUT_ROUTE)
+        .headers(headers -> headers.setBearerAuth(token))
+        .exchange()
+        .expectStatus()
+        .isOk();
+  }
+
+  @Test
+  void refresh_token_successfully() throws Exception {
+    Map<String, String> loginResponse = doLoginWithReturn(DEFAULT_PASSWORD);
+    String token = loginResponse.get("refresh_token");
+    doRefreshToken(token).expectStatus().isOk();
+    doRefreshToken(token).expectStatus().isBadRequest();
+    doRefreshToken(token.concat("token")).expectStatus().isBadRequest();
   }
 }
