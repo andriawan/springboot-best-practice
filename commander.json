@@ -8,6 +8,9 @@
             "description": "run maven test",
             "command": "mvn test"
         },
+        "coverage": {
+            "command": "mvn clean test jacoco:report"
+        },
         "springboot run": {
             "description": "run springboot",
             "command": "mvn spring-boot:run"
