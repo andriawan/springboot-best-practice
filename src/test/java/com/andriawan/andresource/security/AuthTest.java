@@ -1,34 +1,21 @@
 package com.andriawan.andresource.security;
 
+import com.andriawan.andresource.BaseIntegrationTest;
 import com.andriawan.andresource.config.Security;
 import com.andriawan.andresource.controller.AuthController.RefreshTokenRequest;
 import com.andriawan.andresource.entity.User;
 import com.andriawan.andresource.repository.UserRepository;
 import java.util.Map;
 import java.util.function.Consumer;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
-import org.testcontainers.containers.PostgreSQLContainer;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-@AutoConfigureWebTestClient
-public class AuthTest {
-
-  @ServiceConnection
-  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
+public class AuthTest extends BaseIntegrationTest {
 
   @Autowired UserRepository userRepository;
 
@@ -40,18 +27,6 @@ public class AuthTest {
   static void overrideProperties(DynamicPropertyRegistry registry) {
     registry.add("bucket4j.enabled", () -> "false");
   }
-
-  @BeforeAll
-  static void beforeAll() {
-    postgres.start();
-  }
-
-  @AfterAll
-  static void afterAll() {
-    postgres.stop();
-  }
-
-  @Autowired private WebTestClient webTestClient;
 
   private ResponseSpec doLogin(String password) throws Exception {
     User user = userRepository.findById(1L).orElseThrow();
