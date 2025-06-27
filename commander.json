@@ -34,6 +34,18 @@
         },
         "docker compose full build": {
             "command": "docker compose -f docker/app/compose.yml build --no-cache"
+        },
+        "git push HEAD": {
+            "description": "git push HEAD",
+            "command": "git push origin HEAD"
+        },
+        "git push force": {
+            "description": "git push force",
+            "command": "git push origin HEAD --force"
+        },
+        "git push with following tags": {
+            "description": "git push with following tags",
+            "command": "git push origin --tags"
         }
     }
 }
