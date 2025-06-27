@@ -49,8 +49,8 @@ public class TokenServiceTest {
     when(jpaUserDetailsService.getAuthenticatedUser()).thenReturn(principal);
 
     // Mock jwtEncoder
-    var jwtAccess = mock(org.springframework.security.oauth2.jwt.Jwt.class);
-    var jwtRefresh = mock(org.springframework.security.oauth2.jwt.Jwt.class);
+    var jwtAccess = mock(Jwt.class);
+    var jwtRefresh = mock(Jwt.class);
 
     when(jwtAccess.getTokenValue()).thenReturn("access-token");
     when(jwtRefresh.getTokenValue()).thenReturn("refresh-token");
@@ -72,7 +72,7 @@ public class TokenServiceTest {
     var token = new RefreshToken();
     token.setBlacklistedAt(Instant.now());
 
-    when(refreshTokenRepository.findByToken("token")).thenReturn(java.util.Optional.of(token));
+    when(refreshTokenRepository.findByToken("token")).thenReturn(Optional.of(token));
 
     assertTrue(tokenService.isBlacklistedRefreshToken("token"));
   }
@@ -82,7 +82,7 @@ public class TokenServiceTest {
     var token = new RefreshToken();
     token.setBlacklistedAt(null);
 
-    when(refreshTokenRepository.findByToken("token")).thenReturn(java.util.Optional.of(token));
+    when(refreshTokenRepository.findByToken("token")).thenReturn(Optional.of(token));
 
     assertFalse(tokenService.isBlacklistedRefreshToken("token"));
   }
@@ -92,7 +92,7 @@ public class TokenServiceTest {
     var token = new RefreshToken();
     token.setBlacklistedAt(null);
 
-    when(refreshTokenRepository.findByToken("token")).thenReturn(Optional.ofNullable(null));
+    when(refreshTokenRepository.findByToken("token")).thenReturn(Optional.empty());
 
     assertThrows(EntityNotFoundException.class, () -> tokenService.backlistToken("token"));
   }
