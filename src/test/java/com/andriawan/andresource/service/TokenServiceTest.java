@@ -8,8 +8,10 @@ import com.andriawan.andresource.entity.AuthenticatedUser;
 import com.andriawan.andresource.entity.RefreshToken;
 import com.andriawan.andresource.entity.User;
 import com.andriawan.andresource.repository.RefreshTokenRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -41,6 +43,7 @@ public class TokenServiceTest {
   void generateToken_returnsAccessAndRefreshToken() {
     var user = mock(User.class);
     when(user.getId()).thenReturn(1L);
+    when(user.getEmail()).thenReturn("user@example.com");
     var principal = mock(AuthenticatedUser.class);
     when(principal.getUser()).thenReturn(user);
     when(jpaUserDetailsService.getAuthenticatedUser()).thenReturn(principal);
@@ -56,7 +59,7 @@ public class TokenServiceTest {
         .thenReturn(jwtAccess) // first call = access
         .thenReturn(jwtRefresh); // second call = refresh
 
-    Map<String, String> tokens = tokenService.generateToken("user@example.com");
+    Map<String, String> tokens = tokenService.generateToken(user);
 
     assertEquals("access-token", tokens.get("access_token"));
     assertEquals("refresh-token", tokens.get("refresh_token"));
@@ -82,6 +85,16 @@ public class TokenServiceTest {
     when(refreshTokenRepository.findByToken("token")).thenReturn(java.util.Optional.of(token));
 
     assertFalse(tokenService.isBlacklistedRefreshToken("token"));
+  }
+
+  @Test
+  void backlistnnNonExistingToken_returnException() {
+    var token = new RefreshToken();
+    token.setBlacklistedAt(null);
+
+    when(refreshTokenRepository.findByToken("token")).thenReturn(Optional.ofNullable(null));
+
+    assertThrows(EntityNotFoundException.class, () -> tokenService.backlistToken("token"));
   }
 
   @Test
