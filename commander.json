@@ -46,6 +46,10 @@
         "git push with following tags": {
             "description": "git push with following tags",
             "command": "git push origin --tags"
+        },
+        "delete merged branch local": {
+            "description": "delete merged branch local",
+            "command": "git branch --merged | grep -vE '^\\*|main|master|develop' | xargs -n 1 git branch -d"
         }
     }
 }
