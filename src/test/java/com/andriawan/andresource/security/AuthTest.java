@@ -5,6 +5,7 @@ import com.andriawan.andresource.controller.AuthController.RefreshTokenRequest;
 import com.andriawan.andresource.entity.User;
 import com.andriawan.andresource.repository.UserRepository;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,10 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -32,6 +36,11 @@ public class AuthTest {
   final String LOGOUT_ROUTE = "/api/v1/auth/logout";
   final String REFRESH_ROUTE = "/api/v1/auth/token/refresh";
 
+  @DynamicPropertySource
+  static void overrideProperties(DynamicPropertyRegistry registry) {
+    registry.add("bucket4j.enabled", () -> "false");
+  }
+
   @BeforeAll
   static void beforeAll() {
     postgres.start();
@@ -45,14 +54,16 @@ public class AuthTest {
   @Autowired private WebTestClient webTestClient;
 
   private ResponseSpec doLogin(String password) throws Exception {
-    String loginEndpoint = Security.loginRoute;
     User user = userRepository.findById(1L).orElseThrow();
-    var response =
-        webTestClient
-            .post()
-            .uri(loginEndpoint)
-            .headers(headers -> headers.setBasicAuth(user.getEmail(), password))
-            .exchange();
+    Consumer<HttpHeaders> headerConfigFunc =
+        headers -> headers.setBasicAuth(user.getEmail(), password);
+    return doLoginWithHeader(password, headerConfigFunc);
+  }
+
+  private ResponseSpec doLoginWithHeader(String password, Consumer<HttpHeaders> headerConfigFunc)
+      throws Exception {
+    String loginEndpoint = Security.loginRoute;
+    var response = webTestClient.post().uri(loginEndpoint).headers(headerConfigFunc).exchange();
     return response;
   }
 
@@ -88,6 +99,26 @@ public class AuthTest {
     ParameterizedTypeReference<Map<String, String>> typeRef = new ParameterizedTypeReference<>() {};
     var result = doLoginWithId(password, id).returnResult(typeRef).getResponseBody().blockFirst();
     return result;
+  }
+
+  @Test
+  void user_get_invalid_auth_basic_header_when_not_provided() throws Exception {
+    doLoginWithHeader(DEFAULT_PASSWORD, header -> header.add("test", "sample"))
+        .expectStatus()
+        .isBadRequest();
+  }
+
+  @Test
+  void user_get_invalid_or_expired_token() throws Exception {
+    var sampleToken =
+        "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJhcHBzIiwic3ViIjoiYWxpY2Uuam9obnNvbkBleGFtcGxlLmNvbSIsImV4cCI6MTc1MDYwODgxMCwidXNlcl9pZCI6MSwiaWF0IjoxNzUwNjA4NjkwLCJzY29wZSI6IiJ9.BcO7eTXIjx0pQt4kYZdnB2ffy4oOsveDzpo-troM6wDKOqnkMh3E_QfLa7o3BObJP3C2ZLswypryt6bhi7PNXVSV08jJ43NMkQXFf38NYfld91a1VPxRm5-EnVvK9PI239VWftQXfGrGsnMjHWn239J_WiRqLVf5onFuIovxPb8xunSf3lfxM_Jaz0VQbmBtGT6iX9YNvTo8VpiHJLEeKRj6vYf_JI2bzdVH977hXBTxSQhvhkOlnpOa8AQBvQFbA0pbjnGXSfazPEnTTLxojdH2NMb9xXrDpTOx7hE3GLvrKodL2rwwdAeqUh_TjkdFmJooNwT82lifggCKk3_kDQ";
+    webTestClient
+        .get()
+        .uri("/api/v1/me")
+        .headers(headers -> headers.setBearerAuth(sampleToken))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
   }
 
   @Test
