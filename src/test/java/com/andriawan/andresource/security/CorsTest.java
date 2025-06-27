@@ -28,6 +28,8 @@ public class CorsTest {
     registry.add("cors.enabled", () -> "true");
     registry.add("cors.origin.allowed", () -> ORIGIN);
     registry.add("cors.method.allowed", () -> "GET");
+    registry.add("git.closest.tag.name", () -> "");
+    registry.add("git.build.version", () -> "");
   }
 
   @BeforeAll
