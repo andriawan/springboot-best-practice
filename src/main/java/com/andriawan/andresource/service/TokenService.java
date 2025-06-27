@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -60,10 +61,8 @@ public class TokenService {
     return Map.of("access_token", accessToken, "refresh_token", refreshToken);
   }
 
-  @Transactional
   public String setupRefreshToken(JwtClaimsSet claimsSetRefreshToken) {
     String token = encodeToken(claimsSetRefreshToken);
-    refreshTokenRepository.deleteByToken(token);
     refreshTokenRepository.save(
         RefreshToken.builder()
             .token(token)
@@ -99,6 +98,7 @@ public class TokenService {
         JwtClaimsSet.builder()
             .issuer("apps")
             .issuedAt(params.now())
+            .id(UUID.randomUUID().toString())
             .expiresAt(params.now().plus(params.time(), ChronoUnit.SECONDS))
             .subject(params.username())
             .claim("scope", params.scope())
