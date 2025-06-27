@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/andriawan/springboot-best-practice/compare/v1.2.1...v1.3.0) (2025-06-27)
+
+
+### Features
+
+* add handler response controller for exception ([ea63a05](https://github.com/andriawan/springboot-best-practice/commit/ea63a0519fe0a0520f163b9046c11021b22bef16))
+
 ### [1.2.1](https://github.com/andriawan/springboot-best-practice/compare/v1.2.0...v1.2.1) (2025-06-27)
 
 
