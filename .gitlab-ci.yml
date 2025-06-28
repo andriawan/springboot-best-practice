@@ -1,0 +1,41 @@
+stages:
+  - setup
+  - test
+  - format
+
+variables:
+  MAVEN_CLI_OPTS: "-B -ntp"
+  CERTS_PATH: "./src/main/resources/certs"
+  GIT_STRATEGY: clone
+
+cache:
+  key: maven-cache
+  paths:
+    - .m2/repository/
+
+before_script:
+  - export MAVEN_USER_HOME=$CI_PROJECT_DIR/.m2
+  - mkdir -p $MAVEN_USER_HOME/repository
+
+test_and_coverage:
+  stage: test
+  image: maven:3.9.6-amazoncorretto-21
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - mvn spotless:check
+  script:
+    - echo "$SAMPLE_PRIVATE_KEY" > ${CERTS_PATH}/private_key.pem
+    - echo "$SAMPLE_PUBLIC_KEY" > ${CERTS_PATH}/public_key.pem
+    - chmod 600 ${CERTS_PATH}/private_key.pem ${CERTS_PATH}/public_key.pem
+    - mvn $MAVEN_CLI_OPTS clean test jacoco:report
+  rules:
+    - if: $CI_COMMIT_MESSAGE =~ /\[gitlab-ci]/
+  artifacts:
+    reports:
+      junit: target/surefire-reports/*.xml
+    paths:
+      - target/site/jacoco/
