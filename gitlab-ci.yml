@@ -1,0 +1,72 @@
+stages:
+  - setup
+  - test
+  - format
+
+variables:
+  MAVEN_CLI_OPTS: "-B -ntp"
+  CERTS_PATH: "./src/main/resources/certs"
+  GIT_STRATEGY: clone
+
+cache:
+  key: maven-cache
+  paths:
+    - .m2/repository/
+
+before_script:
+  - export MAVEN_USER_HOME=$CI_PROJECT_DIR/.m2
+  - mkdir -p $MAVEN_USER_HOME/repository
+
+setup:
+  stage: setup
+  image: maven:3.9.6-amazoncorretto-21
+  script:
+    - echo "$SAMPLE_PRIVATE_KEY" > ${CERTS_PATH}/private_key.pem
+    - echo "$SAMPLE_PUBLIC_KEY" > ${CERTS_PATH}/public_key.pem
+    - chmod 600 ${CERTS_PATH}/private_key.pem ${CERTS_PATH}/public_key.pem
+    - apt-get update && apt-get install -y tree
+    - tree ${CERTS_PATH}
+  rules:
+    - if: '$CI_COMMIT_MESSAGE =~ /gitlab-ci/i'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: always
+    - when: never
+
+test_and_coverage:
+  stage: test
+  image: maven:3.9.6-amazoncorretto-21
+  script:
+    - mvn $MAVEN_CLI_OPTS clean test jacoco:report
+  rules:
+    - if: '$CI_COMMIT_MESSAGE =~ /gitlab-ci/i'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: always
+    - when: never
+  artifacts:
+    reports:
+      junit: target/surefire-reports/*.xml
+    paths:
+      - target/site/jacoco/
+
+format:
+  stage: format
+  image: maven:3.9.6-amazoncorretto-21
+  script:
+    - mvn spotless:apply
+    - git config --global user.name "$GITLAB_USER_NAME"
+    - git config --global user.email "$GITLAB_USER_EMAIL"
+    - if [ -n "$(git status --porcelain)" ]; then
+        git add -A &&
+        git commit -m "chore(format): apply Spotless auto-format" &&
+        git push "https://${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" HEAD:$CI_COMMIT_REF_NAME;
+      else
+        echo "No formatting changes to commit.";
+      fi
+  rules:
+    - if: '$CI_COMMIT_MESSAGE =~ /gitlab-ci/i'
+      when: always
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: always
+    - when: never
