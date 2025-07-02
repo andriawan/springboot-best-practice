@@ -1,22 +1,25 @@
 package com.andriawan.andresource.entity;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@AllArgsConstructor
+@Getter
 public class AuthenticatedUser implements UserDetails {
 
-  private User user;
-
-  public AuthenticatedUser(User user) {
-    this.user = user;
-  }
+  private final User user;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    final ArrayList<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
-    return roles;
+    var roles = user.getRoles();
+    return roles.stream()
+        .map(role -> new SimpleGrantedAuthority(role.getName()))
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -27,9 +30,5 @@ public class AuthenticatedUser implements UserDetails {
   @Override
   public String getUsername() {
     return user.getEmail();
-  }
-
-  public User getUser() {
-    return user;
   }
 }
