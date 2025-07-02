@@ -16,6 +16,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Spotless check
+        run: mvn spotless:check
       - name: Copy Private and Public Keys
         run: |
           echo "${{ secrets.SAMPLE_PRIVATE_KEY }}" > ${CERTS_PATH}/private_key.pem
@@ -41,19 +43,3 @@ jobs:
         uses: codecov/codecov-action@v5
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      - name: Run Spotless and apply formatting
-        run: mvn spotless:apply
-      - name: Commit and push changes if formatting was applied
-        env:
-          GIT_EMAIL: ${{ github.actor }}@users.noreply.github.com
-          GIT_NAME: ${{ github.actor }}"
-        run: |
-          git config --global user.name "$GIT_NAME"
-          git config --global user.email "$GIT_EMAIL"
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git add -A
-            git commit -m "chore(format): apply Spotless auto-format"
-            git push
-          else
-            echo "No formatting changes to commit."
-          fi
