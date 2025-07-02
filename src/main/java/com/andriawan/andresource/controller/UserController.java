@@ -8,6 +8,7 @@ import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,12 +23,14 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping("/users")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_ADMIN')")
   public ResponseEntity<List<UserResponse>> getAllUser(Principal principal) {
     List<UserResponse> users = userService.getAllUsers();
     return ResponseEntity.ok(users);
   }
 
   @GetMapping("/me")
+  @PreAuthorize("hasAuthority('SCOPE_ROLE_USER') or hasAuthority('SCOPE_ROLE_ADMIN')")
   public ResponseEntity<UserResponse> getAuthenticatedUser(Principal principal) {
     try {
       UserResponse user = userService.getUserByEmail(principal.getName());
