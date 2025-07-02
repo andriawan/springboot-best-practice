@@ -112,5 +112,9 @@ cors.method.allowed=${CORS_METHOD_ALLOWED:*}
 
 Supports full integration tests using Testcontainers, including auto-configuration with `@ServiceConnection`. This allows isolated, reproducible testing against real services like PostgreSQL or Redis in disposable Docker containers.
 
+### ✅ Dependency Updates
+
+Regularly updates project dependencies to ensure security, performance, and compatibility with the latest versions.
+
 Perfect as a starter template for any Java backend project!
 Check it out and feel free to ⭐ or fork!
