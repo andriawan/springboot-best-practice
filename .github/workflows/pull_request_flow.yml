@@ -39,7 +39,6 @@ jobs:
       - name: Run tests and collect coverage
         run: mvn -B clean test jacoco:report
       - name: Upload coverage to Codecov
-        if: false
         uses: codecov/codecov-action@v5
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
