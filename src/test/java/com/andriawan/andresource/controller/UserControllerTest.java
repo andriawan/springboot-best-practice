@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.andriawan.andresource.config.CustomAuthenticationEntryPoint;
+import com.andriawan.andresource.config.InternalFaker;
 import com.andriawan.andresource.config.Security;
 import com.andriawan.andresource.dto.UserResponse;
 import com.andriawan.andresource.repository.UserRepository;
@@ -32,11 +33,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc()
-@Import({Security.class})
+@Import({Security.class, InternalFaker.class})
 @ActiveProfiles("test")
 class UserControllerTest {
 
   @Autowired private MockMvc mockMvc;
+  @Autowired Faker faker;
 
   @MockitoBean private UserService userService;
   @MockitoBean private UserRepository userRepository;
@@ -48,7 +50,6 @@ class UserControllerTest {
 
   @BeforeEach
   void setup() {
-    var faker = Faker.instance();
     var fullName = faker.name().fullName();
     var email = faker.internet().safeEmailAddress();
     responseDto =

@@ -54,7 +54,7 @@ public class UserServiceTest {
   @BeforeEach
   public void setUp() {
     MockitoAnnotations.openMocks(this);
-    var faker = Faker.instance();
+    var faker = new Faker();
     var fullName = faker.name().fullName();
     var email = faker.internet().safeEmailAddress();
     var password = faker.internet().password();
