@@ -2,6 +2,10 @@
 
 This is a minimal Spring Boot application built with standard best practices. It includes JWT bearer token authentication via Spring Security, supports auto-reloading .env configuration, and provides clean, self-documented APIs using Swagger/OpenAPI. Designed as a lightweight foundation for scalable, secure RESTful services.
 
+## Coverage Status
+
+[![codecov](https://codecov.io/gh/andriawan/springboot-best-practice/graph/badge.svg?token=4QCLOGCOXI)](https://codecov.io/gh/andriawan/springboot-best-practice)
+
 ## Prerequisites
 
 This project uses JWTs signed with **asymmetric encryption** (e.g., RSA).  
