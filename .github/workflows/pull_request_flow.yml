@@ -18,10 +18,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Spotless check
         run: mvn spotless:check
-      - name: Copy Private and Public Keys
+      - name: Generate Private and Public Keys
         run: |
-          echo "${{ secrets.SAMPLE_PRIVATE_KEY }}" > ${CERTS_PATH}/private_key.pem
-          echo "${{ secrets.SAMPLE_PUBLIC_KEY }}" > ${CERTS_PATH}/public_key.pem
+          mkdir -p ${CERTS_PATH}
+          openssl genpkey -algorithm RSA -out ${CERTS_PATH}/private_key.pem -pkeyopt rsa_keygen_bits:2048
+          openssl rsa -pubout -in ${CERTS_PATH}/private_key.pem -out ${CERTS_PATH}/public_key.pem
           chmod 600 ${CERTS_PATH}/private_key.pem ${CERTS_PATH}/public_key.pem
           tree ${CERTS_PATH}
       - name: Set up Java
