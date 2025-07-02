@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import org.apache.commons.lang3.builder.EqualsExclude;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -25,10 +27,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 public class Role {
 
   @Id
+  @EqualsAndHashCode.Include
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
   @Column(nullable = false, unique = true)
+  @EqualsAndHashCode.Include
   private String name;
 
   @ManyToMany(mappedBy = "roles")
