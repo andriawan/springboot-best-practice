@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/andriawan/springboot-best-practice/compare/v1.3.0...v1.4.0) (2025-07-02)
+
+
+### Features
+
+* add roles to user entity, auth, mapper and response ([60de33c](https://github.com/andriawan/springboot-best-practice/commit/60de33cd5b0c487127da28a2ea9133c835b50136))
+* **scope:** add scope to JWT token based on user roles ([ae6f2a4](https://github.com/andriawan/springboot-best-practice/commit/ae6f2a4efbae0941156240a1e8137dbc7dde63db))
+
 ## [1.3.0](https://github.com/andriawan/springboot-best-practice/compare/v1.2.1...v1.3.0) (2025-06-27)
 
 
