@@ -2,6 +2,7 @@ package com.andriawan.andresource.service;
 
 import com.andriawan.andresource.controller.AuthController.RefreshTokenRequest;
 import com.andriawan.andresource.entity.RefreshToken;
+import com.andriawan.andresource.entity.Role;
 import com.andriawan.andresource.entity.User;
 import com.andriawan.andresource.repository.RefreshTokenRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -9,7 +10,9 @@ import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -39,7 +42,8 @@ public class TokenService {
   private final JpaUserDetailsService jpaUserDetailsService;
   private final RefreshTokenRepository refreshTokenRepository;
 
-  public record JwtClaimsSetParams(long time, Instant now, String scope, String username) {}
+  public record JwtClaimsSetParams(
+      long time, Instant now, String scope, String username, Long userId) {}
 
   public Map<String, String> generateToken(Authentication authentication) {
     return generateToken(authentication.getName());
@@ -49,13 +53,25 @@ public class TokenService {
     return generateToken(user.getEmail());
   }
 
+  public String buildScope(JpaUserDetailsService jpaUserDetailsService) {
+    Set<String> roles =
+        jpaUserDetailsService.getAuthenticatedUser().getUser().getRoles().stream()
+            .map(Role::getName)
+            .collect(Collectors.toSet());
+    String scope = roles.stream().collect(Collectors.joining(" "));
+    return scope;
+  }
+
   public Map<String, String> generateToken(String username) {
     Instant now = Instant.now();
-    String scope = "";
+    Long userId = jpaUserDetailsService.getAuthenticatedUser().getUser().getId();
+    String scope = buildScope(jpaUserDetailsService);
     JwtClaimsSet claimsSetAccessToken =
-        buildJwtClaimsSet(new JwtClaimsSetParams(expiredTokenSeconds, now, scope, username));
+        buildJwtClaimsSet(
+            new JwtClaimsSetParams(expiredTokenSeconds, now, scope, username, userId));
     JwtClaimsSet claimsSetRefreshToken =
-        buildJwtClaimsSet(new JwtClaimsSetParams(expiredRefreshSeconds, now, scope, username));
+        buildJwtClaimsSet(
+            new JwtClaimsSetParams(expiredRefreshSeconds, now, scope, username, userId));
     String accessToken = encodeToken(claimsSetAccessToken);
     String refreshToken = setupRefreshToken(claimsSetRefreshToken);
     return Map.of("access_token", accessToken, "refresh_token", refreshToken);
@@ -91,9 +107,6 @@ public class TokenService {
   }
 
   private JwtClaimsSet buildJwtClaimsSet(JwtClaimsSetParams params) {
-
-    Long userId = jpaUserDetailsService.getAuthenticatedUser().getUser().getId();
-
     JwtClaimsSet claimsSet =
         JwtClaimsSet.builder()
             .issuer("apps")
@@ -102,7 +115,7 @@ public class TokenService {
             .expiresAt(params.now().plus(params.time(), ChronoUnit.SECONDS))
             .subject(params.username())
             .claim("scope", params.scope())
-            .claim("user_id", userId)
+            .claim("user_id", params.userId())
             .build();
     return claimsSet;
   }

@@ -28,7 +28,7 @@ public class JpaUserDetailsService implements UserDetailsService {
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     try {
       String filteredUsername = URLDecoder.decode(username, StandardCharsets.UTF_8.name());
-      Optional<User> user = userRepository.findByEmail(filteredUsername);
+      Optional<User> user = userRepository.findByEmailWithRoles(filteredUsername);
       authenticatedUser =
           user.map(AuthenticatedUser::new)
               .orElseThrow(() -> new UsernameNotFoundException("Username not found"));

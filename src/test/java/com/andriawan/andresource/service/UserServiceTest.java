@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -15,6 +14,7 @@ import static org.mockito.Mockito.when;
 import com.andriawan.andresource.dto.UserCreate;
 import com.andriawan.andresource.dto.UserResponse;
 import com.andriawan.andresource.dto.UserUpdate;
+import com.andriawan.andresource.entity.Role;
 import com.andriawan.andresource.entity.User;
 import com.andriawan.andresource.exception.EntityAlreadyExistsException;
 import com.andriawan.andresource.mapper.UserMapper;
@@ -24,6 +24,7 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import net.datafaker.Faker;
 import org.junit.function.ThrowingRunnable;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,6 +49,7 @@ public class UserServiceTest {
   private UserCreate createDto;
   private UserUpdate updateDto;
   private UserResponse responseDto;
+  private Role userRole;
 
   @BeforeEach
   public void setUp() {
@@ -56,6 +58,9 @@ public class UserServiceTest {
     var fullName = faker.name().fullName();
     var email = faker.internet().safeEmailAddress();
     var password = faker.internet().password();
+
+    userRole = Role.builder().id(1).name("ROLE_USER").build();
+
     testUser =
         User.builder()
             .id(1L)
@@ -66,6 +71,7 @@ public class UserServiceTest {
             .updatedAt(ZonedDateTime.now())
             .isActive(true)
             .isDeleted(false)
+            .roles(Set.of(userRole))
             .build();
 
     createDto =
@@ -85,6 +91,7 @@ public class UserServiceTest {
             .createdAt(testUser.getCreatedAt())
             .updatedAt(testUser.getUpdatedAt())
             .isActive(true)
+            .roles(Set.of("ROLE_USER"))
             .build();
   }
 

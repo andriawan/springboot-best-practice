@@ -6,12 +6,14 @@ import static org.mockito.Mockito.*;
 
 import com.andriawan.andresource.entity.AuthenticatedUser;
 import com.andriawan.andresource.entity.RefreshToken;
+import com.andriawan.andresource.entity.Role;
 import com.andriawan.andresource.entity.User;
 import com.andriawan.andresource.repository.RefreshTokenRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -42,8 +44,10 @@ public class TokenServiceTest {
   @Test
   void generateToken_returnsAccessAndRefreshToken() {
     var user = mock(User.class);
+    var role = Set.of(Role.builder().id(1).name("ROLE_USER").build());
     when(user.getId()).thenReturn(1L);
     when(user.getEmail()).thenReturn("user@example.com");
+    when(user.getRoles()).thenReturn(role);
     var principal = mock(AuthenticatedUser.class);
     when(principal.getUser()).thenReturn(user);
     when(jpaUserDetailsService.getAuthenticatedUser()).thenReturn(principal);
@@ -68,6 +72,22 @@ public class TokenServiceTest {
   }
 
   @Test
+  void generateScope_returndStringScopes() {
+    var user = mock(User.class);
+    var userRole = Role.builder().id(1).name("ROLE_USER").build();
+    var adminRole = Role.builder().id(2).name("ROLE_ADMIN").build();
+    var role = Set.of(userRole, adminRole);
+    when(user.getId()).thenReturn(1L);
+    when(user.getEmail()).thenReturn("user@example.com");
+    when(user.getRoles()).thenReturn(role);
+    var principal = mock(AuthenticatedUser.class);
+    when(principal.getUser()).thenReturn(user);
+    when(jpaUserDetailsService.getAuthenticatedUser()).thenReturn(principal);
+    var scopes = tokenService.buildScope(jpaUserDetailsService);
+    assertEquals(scopes, "ROLE_USER ROLE_ADMIN");
+  }
+
+  @Test
   void isBlacklistedRefreshToken_returnsTrueWhenBlacklisted() {
     var token = new RefreshToken();
     token.setBlacklistedAt(Instant.now());
@@ -88,7 +108,7 @@ public class TokenServiceTest {
   }
 
   @Test
-  void backlistnnNonExistingToken_returnException() {
+  void backlistNonExistingToken_returnException() {
     var token = new RefreshToken();
     token.setBlacklistedAt(null);
 

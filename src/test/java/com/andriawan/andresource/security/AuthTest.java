@@ -3,12 +3,9 @@ package com.andriawan.andresource.security;
 import com.andriawan.andresource.BaseIntegrationTest;
 import com.andriawan.andresource.config.Security;
 import com.andriawan.andresource.controller.AuthController.RefreshTokenRequest;
-import com.andriawan.andresource.entity.User;
-import com.andriawan.andresource.repository.UserRepository;
 import java.util.Map;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -17,11 +14,10 @@ import org.springframework.test.web.reactive.server.WebTestClient.ResponseSpec;
 
 public class AuthTest extends BaseIntegrationTest {
 
-  @Autowired UserRepository userRepository;
-
   final String DEFAULT_PASSWORD = "password";
   final String LOGOUT_ROUTE = "/api/v1/auth/logout";
   final String REFRESH_ROUTE = "/api/v1/auth/token/refresh";
+  final String DEFAULT_EMAIL = "alice.johnson@example.com";
 
   @DynamicPropertySource
   static void overrideProperties(DynamicPropertyRegistry registry) {
@@ -29,9 +25,8 @@ public class AuthTest extends BaseIntegrationTest {
   }
 
   private ResponseSpec doLogin(String password) throws Exception {
-    User user = userRepository.findById(1L).orElseThrow();
     Consumer<HttpHeaders> headerConfigFunc =
-        headers -> headers.setBasicAuth(user.getEmail(), password);
+        headers -> headers.setBasicAuth(DEFAULT_EMAIL, password);
     return doLoginWithHeader(password, headerConfigFunc);
   }
 
@@ -44,12 +39,11 @@ public class AuthTest extends BaseIntegrationTest {
 
   private ResponseSpec doLoginWithId(String password, Long id) throws Exception {
     String loginEndpoint = Security.loginRoute;
-    User user = userRepository.findById(id).orElseThrow();
     var response =
         webTestClient
             .post()
             .uri(loginEndpoint)
-            .headers(headers -> headers.setBasicAuth(user.getEmail(), password))
+            .headers(headers -> headers.setBasicAuth(DEFAULT_EMAIL, password))
             .exchange();
     return response;
   }
@@ -117,6 +111,19 @@ public class AuthTest extends BaseIntegrationTest {
         .exchange()
         .expectStatus()
         .isOk();
+  }
+
+  @Test
+  void user_cannot_get_list_users() throws Exception {
+    Map<String, String> loginResponse = doLoginWithReturn(DEFAULT_PASSWORD, 3L);
+    String token = loginResponse.get("access_token");
+    webTestClient
+        .get()
+        .uri("/api/v1/users")
+        .headers(headers -> headers.setBearerAuth(token))
+        .exchange()
+        .expectStatus()
+        .isForbidden();
   }
 
   @Test

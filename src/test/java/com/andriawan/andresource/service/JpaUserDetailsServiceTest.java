@@ -39,7 +39,7 @@ public class JpaUserDetailsServiceTest {
     User user = new User();
     user.setEmail(decodedEmail);
 
-    when(userRepository.findByEmail(decodedEmail)).thenReturn(Optional.of(user));
+    when(userRepository.findByEmailWithRoles(decodedEmail)).thenReturn(Optional.of(user));
 
     var result = jpaUserDetailsService.loadUserByUsername(encodedEmail);
 
