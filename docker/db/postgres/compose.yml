@@ -1,13 +1,13 @@
-version: '3.8'
 services:
   db:
+    hostname: db
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: mydb
     ports:
-      - '127.0.0.1:5432:5432'
+      - '${IP_BIND:-172.18.0.1}:5432:5432'
     volumes:
       - postgres:/var/lib/postgresql/data
 

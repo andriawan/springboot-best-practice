@@ -1,10 +1,10 @@
 package com.andriawan.andresource.service;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import net.datafaker.Faker;
-import org.junit.function.ThrowingRunnable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -57,7 +57,7 @@ public class UserServiceTest {
     var faker = new Faker();
     var fullName = faker.name().fullName();
     var email = faker.internet().safeEmailAddress();
-    var password = faker.internet().password();
+    var password = faker.credentials().password();
 
     userRole = Role.builder().id(1).name("ROLE_USER").build();
 
@@ -78,7 +78,7 @@ public class UserServiceTest {
         UserCreate.builder()
             .name(fullName)
             .email(email)
-            .password(faker.internet().password())
+            .password(faker.credentials().password())
             .build();
 
     updateDto = UserUpdate.builder().name(fullName).email(email).isActive(true).build();
@@ -127,7 +127,7 @@ public class UserServiceTest {
     // Given
     when(userRepository.existsByEmailAndIsDeletedFalse(createDto.getEmail())).thenReturn(true);
 
-    ThrowingRunnable runnable = () -> userService.createUser(createDto);
+    Executable runnable = () -> userService.createUser(createDto);
 
     // When & Then
     assertThrows(EntityNotFoundException.class, runnable);
@@ -160,7 +160,7 @@ public class UserServiceTest {
 
     when(userRepository.findByIdAndIsDeletedFalse(eq(123L))).thenReturn(Optional.ofNullable(null));
 
-    ThrowingRunnable runnable = () -> userService.getUserById(123L);
+    Executable runnable = () -> userService.getUserById(123L);
 
     assertThrows(EntityNotFoundException.class, runnable);
   }
@@ -190,7 +190,7 @@ public class UserServiceTest {
     when(userRepository.findByEmailAndIsDeletedFalse(testUser.getEmail()))
         .thenReturn(Optional.empty());
 
-    ThrowingRunnable runnable = () -> userService.getUserByEmail(testUser.getEmail());
+    Executable runnable = () -> userService.getUserByEmail(testUser.getEmail());
 
     // When & Then
     assertThrows(EntityNotFoundException.class, runnable);
@@ -297,7 +297,7 @@ public class UserServiceTest {
     updateDto.setEmail("modified@mail.com");
     when(userRepository.existsByEmailAndIsDeletedFalse(updateDto.getEmail())).thenReturn(true);
 
-    ThrowingRunnable runnable = () -> userService.updateUser(1L, updateDto);
+    Executable runnable = () -> userService.updateUser(1L, updateDto);
 
     // When & Then
     assertThrows(EntityAlreadyExistsException.class, runnable);
@@ -309,7 +309,7 @@ public class UserServiceTest {
     // Given
     when(userRepository.findByIdAndIsDeletedFalse(1L)).thenReturn(Optional.empty());
 
-    ThrowingRunnable runnable = () -> userService.updateUser(1L, updateDto);
+    Executable runnable = () -> userService.updateUser(1L, updateDto);
 
     // When & Then
     assertThrows(EntityNotFoundException.class, runnable);
@@ -338,7 +338,7 @@ public class UserServiceTest {
     // Given
     when(userRepository.findByIdAndIsDeletedFalse(1L)).thenReturn(Optional.empty());
 
-    ThrowingRunnable runnable = () -> userService.deleteUser(1L);
+    Executable runnable = () -> userService.deleteUser(1L);
 
     // When & Then
     assertThrows(EntityNotFoundException.class, runnable);
@@ -383,7 +383,7 @@ public class UserServiceTest {
     // Given
     when(userRepository.findByIdAndIsDeletedFalse(1L)).thenReturn(Optional.empty());
 
-    ThrowingRunnable runnable = () -> userService.activateUser(1L);
+    Executable runnable = () -> userService.activateUser(1L);
 
     // When & Then
     assertThrows(EntityNotFoundException.class, runnable);
@@ -395,7 +395,7 @@ public class UserServiceTest {
     // Given
     when(userRepository.findByIdAndIsDeletedFalse(1L)).thenReturn(Optional.empty());
 
-    ThrowingRunnable runnable = () -> userService.deactivateUser(1L);
+    Executable runnable = () -> userService.deactivateUser(1L);
 
     // When & Then
     assertThrows(EntityNotFoundException.class, runnable);

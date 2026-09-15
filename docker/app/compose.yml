@@ -1,9 +1,12 @@
 services:
   app:
+    hostname: ${SPRING_APPLICATION_NAME:-demo}
     build:
       context: ../../
       dockerfile: docker/app/Dockerfile
     container_name: ${SPRING_APPLICATION_NAME:-demo}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - '${APP_PORT:-8080}:8080'
     volumes:
