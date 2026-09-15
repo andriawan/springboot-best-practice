@@ -1,13 +1,42 @@
 version: 2
+
 updates:
   - package-ecosystem: "github-actions"
-    directory: "/" # location of your workflows
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "maven"
+    directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
 
-  - package-ecosystem: "maven"
-    directory: "/" # or the subdir where your pom.xml lives
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
+    groups:
+      spring:
+        patterns:
+          - "org.springframework*"
+          - "org.springframework.boot*"
+          - "org.springframework.security*"
+
+      testing:
+        patterns:
+          - "org.junit*"
+          - "org.mockito*"
+          - "org.testcontainers*"
+          - "org.assertj*"
+
+      build-tools:
+        patterns:
+          - "org.apache.maven*"
+          - "org.projectlombok*"
+          - "org.mapstruct*"
+
+      other:
+        patterns:
+          - "*"
