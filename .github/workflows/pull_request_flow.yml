@@ -16,8 +16,17 @@ jobs:
         uses: actions/checkout@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'corretto'
+          java-version: '25'
+          cache: 'maven'
+
       - name: Run Spotless check
         run: mvn spotless:check
+
       - name: Generate Private and Public Keys
         run: |
           mkdir -p ${CERTS_PATH}
@@ -25,20 +34,10 @@ jobs:
           openssl rsa -pubout -in ${CERTS_PATH}/private_key.pem -out ${CERTS_PATH}/public_key.pem
           chmod 600 ${CERTS_PATH}/private_key.pem ${CERTS_PATH}/public_key.pem
           tree ${CERTS_PATH}
-      - name: Set up Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: 'corretto'
-          java-version: '21'
-      - name: Cache Maven dependencies
-        uses: actions/cache@v6
-        with:
-          path: ~/.m2/repository
-          key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            maven-${{ runner.os }}-
+
       - name: Run tests and collect coverage
         run: mvn -B clean test jacoco:report
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         env:
