@@ -28,16 +28,15 @@ public class RateLimiterTest extends BaseIntegrationTest {
     int totalRequests = 10;
     List<Integer> responses =
         IntStream.range(0, totalRequests)
-            .mapToObj(
-                i ->
-                    webTestClient
-                        .get()
-                        .uri("/actuator")
-                        .exchange()
-                        .expectBody()
-                        .returnResult()
-                        .getStatus()
-                        .value())
+            .mapToObj(i ->
+                webTestClient
+                    .get()
+                    .uri("/actuator")
+                    .exchange()
+                    .expectBody()
+                    .returnResult()
+                    .getStatus()
+                    .value())
             .collect(Collectors.toList());
 
     long tooManyRequestsCount =

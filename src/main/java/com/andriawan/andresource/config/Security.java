@@ -86,9 +86,8 @@ public class Security {
   @Bean
   @Order(2)
   public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
-    return http.authorizeHttpRequests(
-            request ->
-                request.requestMatchers(publicRoute).permitAll().anyRequest().authenticated())
+    return http.authorizeHttpRequests(request ->
+            request.requestMatchers(publicRoute).permitAll().anyRequest().authenticated())
         .csrf(crsf -> crsf.disable())
         .cors(corsConfig -> corsConfig.configurationSource(buildCorsConfigurationSource()))
         .userDetailsService(jpaUserDetailsService)

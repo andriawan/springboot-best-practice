@@ -31,10 +31,9 @@ public class AuthController {
   public ResponseEntity<Map<String, String>> authenticate(Authentication authentication) {
     return Optional.ofNullable(authentication)
         .map(auth -> ResponseEntity.ok(tokenService.generateToken(auth)))
-        .orElseThrow(
-            () ->
-                new BadCredentialsException(
-                    "Please supply auth basic method. see detail at https://datatracker.ietf.org/doc/html/rfc7617"));
+        .orElseThrow(() ->
+            new BadCredentialsException(
+                "Please supply auth basic method. see detail at https://datatracker.ietf.org/doc/html/rfc7617"));
   }
 
   @SecurityRequirement(name = "jwt")
